@@ -170,7 +170,7 @@ class MyHomePage extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // Increase & Decrease Age Buttons
+                  // Adding Increase & Decrease Age Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
