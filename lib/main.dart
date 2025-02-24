@@ -40,6 +40,13 @@ class Counter with ChangeNotifier {
     value += 1;
     notifyListeners();
   }
+
+  void decrement() {
+    if (value > 0) {
+      value -= 1;
+      notifyListeners();
+    }
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -98,19 +105,39 @@ class MyHomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    '${counter.value}', // Display current age
+                    'I am ${counter.value} years old', // Display current age in sentence format
                     style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // Sets button color to blue
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: () {
+                          context.read<Counter>().decrement();
+                        },
+                        child: const Text('Reduce Age', style: TextStyle(color: Colors.white)),
+                      ),
+                      const SizedBox(width: 20, height: 20,),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // Sets button color to blue
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: () {
+                          context.read<Counter>().increment();
+                        },
+                        child: const Text('Increase Age',style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              context.read<Counter>().increment();
-            },
-            tooltip: 'Increment Age',
-            child: const Icon(Icons.add),
           ),
         );
       },
