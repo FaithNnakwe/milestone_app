@@ -36,9 +36,16 @@ void setupWindow() {
 class Counter with ChangeNotifier {
   int value = 0;
 
-  void increment() {
-    value += 1;
+  void setAge(double newAge) {
+    value = newAge.toInt();
     notifyListeners();
+  }
+
+  void increment() {
+    if (value < 99) {
+      value += 1;
+      notifyListeners();
+    }
   }
 
   void decrement() {
@@ -68,7 +75,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
-  // Function to determine message and background color based on age
+  // Determine message and background color based on age
   Map<String, dynamic> getAgeMilestone(int age) {
     if (age <= 12) {
       return {'message': "You're a child!", 'color': Colors.lightBlue};
@@ -81,7 +88,18 @@ class MyHomePage extends StatelessWidget {
     } else if (age <= 68) {
       return {'message': "Golden years!", 'color': Colors.grey};
     } else {
-      return {'message': "Enjoy your retirement years!", 'color': Colors.red};
+      return {'message': "Enjor your retirement years!", 'color': Colors.pinkAccent};
+    }
+  }
+
+  // Determine progress bar color based on age
+  Color getProgressColor(int age) {
+    if (age <= 33) {
+      return Colors.green;
+    } else if (age <= 67) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
     }
   }
 
@@ -90,50 +108,92 @@ class MyHomePage extends StatelessWidget {
     return Consumer<Counter>(
       builder: (context, counter, child) {
         var milestone = getAgeMilestone(counter.value);
+        var progressColor = getProgressColor(counter.value);
+        double progress = counter.value / 99; // Normalize to 0-1 for the progress bar
 
         return Scaffold(
           appBar: AppBar(
             title: const Text('Age Counter'),
           ),
           body: Container(
-            color: milestone['color'], // Set background color dynamically
+            color: milestone['color'], // Background color changes based on age
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    milestone['message'], // Display milestone message
+                    milestone['message'], // Milestone message
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'I am ${counter.value} years old', // Display current age in sentence format
+                    'I am ${counter.value} years old', // Display age
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
+                  const SizedBox(height: 20),
+
+                  // Slider to adjust age
+                  Slider(
+                    value: counter.value.toDouble(),
+                    min: 0,
+                    max: 99,
+                    divisions: 99,
+                    label: counter.value.toString(),
+                    onChanged: (double newAge) {
+                      context.read<Counter>().setAge(newAge);
+                    },
+                    activeColor: Colors.blue, // Slider color
+                    thumbColor: Colors.blue,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Progress bar
+                  Container(
+                    width: 300,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.grey[300], // Background color
+                    ),
+                    child: FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: progress, // Adjusts based on age
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: progressColor, // Changes color dynamically
+                        ),
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 30),
+
+                  // Increase & Decrease Age Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Sets button color to blue
+                          backgroundColor: Colors.blue, // Button color
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {
                           context.read<Counter>().decrement();
                         },
-                        child: const Text('Reduce Age', style: TextStyle(color: Colors.white)),
+                        child: const Text('Reduce Age', style: TextStyle(color: Colors.white),),
                       ),
                       const SizedBox(width: 20, height: 20,),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Sets button color to blue
+                          backgroundColor: Colors.blue, // Button color
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {
                           context.read<Counter>().increment();
                         },
-                        child: const Text('Increase Age',style: TextStyle(color: Colors.white)),
+                        child: const Text('Increase Age', style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -146,4 +206,5 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+
 
